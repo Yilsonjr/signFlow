@@ -9,7 +9,7 @@ import { AuthService } from '../../core/services/auth.service';
     <nav class="nav-bar">
       <div class="nav-inner">
         <div class="nav-brand" (click)="router.navigate(['/'])">
-          <svg class="nav-logo" viewBox="0 0 680 260" xmlns="http://www.w3.org/2000/svg">
+          <svg class="nav-logo" viewBox="0 0 680 160" xmlns="http://www.w3.org/2000/svg">
             <title>SignFlow</title>
             <g transform="translate(130, 40)">
               <path d="M42 0 L84 16 L84 52 Q84 80 42 96 Q0 80 0 52 L0 16 Z" fill="#2563EB" opacity="0.12"/>
@@ -74,7 +74,7 @@ import { AuthService } from '../../core/services/auth.service';
       align-items: center;
     }
     .nav-logo {
-      height: 30px;
+      height: 80px;
       width: auto;
     }
     .nav-links {
