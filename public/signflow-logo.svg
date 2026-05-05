@@ -1,0 +1,58 @@
+<svg width="480" height="160" viewBox="0 0 680 260" role="img" xmlns="http://www.w3.org/2000/svg">
+  <title>SignFlow logo</title>
+  <desc>Logo de SignFlow: icono de firma digital con texto en tipografía moderna</desc>
+
+  <!-- Icon: Shield with signature stroke -->
+  <g transform="translate(130, 40)">
+
+    <!-- Shield background fill -->
+    <path d="M42 0 L84 16 L84 52 Q84 80 42 96 Q0 80 0 52 L0 16 Z"
+          fill="#2563EB" opacity="0.12"/>
+
+    <!-- Shield outline -->
+    <path d="M42 6 L78 20 L78 52 Q78 76 42 90 Q6 76 6 52 L6 20 Z"
+          fill="none" stroke="#2563EB" stroke-width="1.5" stroke-linejoin="round"/>
+
+    <!-- Signature curve -->
+    <path d="M22 50 Q30 38 38 48 Q48 22 66 32"
+          fill="none" stroke="#2563EB" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <!-- Flow endpoint dot -->
+    <circle cx="66" cy="32" r="3.5" fill="#2563EB"/>
+
+    <!-- Baseline underline -->
+    <line x1="20" y1="62" x2="68" y2="62"
+          stroke="#2563EB" stroke-width="1" stroke-linecap="round" opacity="0.5"/>
+
+  </g>
+
+  <!-- Separator -->
+  <line x1="236" y1="65" x2="236" y2="135"
+        stroke="#2563EB" stroke-width="0.75" opacity="0.25"/>
+
+  <!-- Wordmark: Sign (bold, dark) -->
+  <text x="252" y="116"
+        font-family="'Helvetica Neue', Arial, sans-serif"
+        font-size="52"
+        font-weight="700"
+        letter-spacing="-1"
+        fill="#0f172a">Sign</text>
+
+  <!-- Wordmark: Flow (light, blue) -->
+  <text x="367" y="116"
+        font-family="'Helvetica Neue', Arial, sans-serif"
+        font-size="52"
+        font-weight="300"
+        letter-spacing="-1"
+        fill="#2563EB">Flow</text>
+
+  <!-- Tagline -->
+  <text x="252" y="145"
+        font-family="'Helvetica Neue', Arial, sans-serif"
+        font-size="13"
+        font-weight="400"
+        letter-spacing="3.5"
+        fill="#2563EB"
+        opacity="0.75">DIGITAL SIGNATURES</text>
+
+</svg>

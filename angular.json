@@ -1,0 +1,93 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "cli": {
+    "packageManager": "npm",
+    "analytics": false
+  },
+  "newProjectRoot": "projects",
+  "projects": {
+    "signflow-ng": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "",
+      "sourceRoot": "src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "browser": "src/main.ts",
+            "tsConfig": "tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "public"
+              }
+            ],
+            "styles": [
+              "src/styles.scss"
+            ],
+            "scripts": [
+              "node_modules/zone.js/fesm2015/zone.js"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "10kB",
+                  "maximumError": "20kB"
+                }
+              ],
+              "outputHashing": "all",
+              "optimization": {
+                "fonts": false
+              },
+              "define": {
+                "import.meta.env.SUPABASE_URL": "\"https://dqkcwosrayaktuuifivm.supabase.co\"",
+                "import.meta.env.SUPABASE_ANON_KEY": "\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRxa2N3b3NyYXlha3R1dWlmaXZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MDc1ODgsImV4cCI6MjA5MzQ4MzU4OH0.Hl5g0yC0vSnuQUJuwFZiF6nMYyERRM-6OTQVW4RTXMg\""
+              }
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "define": {
+                "import.meta.env.SUPABASE_URL": "\"https://dqkcwosrayaktuuifivm.supabase.co\"",
+                "import.meta.env.SUPABASE_ANON_KEY": "\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRxa2N3b3NyYXlha3R1dWlmaXZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MDc1ODgsImV4cCI6MjA5MzQ4MzU4OH0.Hl5g0yC0vSnuQUJuwFZiF6nMYyERRM-6OTQVW4RTXMg\""
+              }
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "signflow-ng:build:production"
+            },
+            "development": {
+              "buildTarget": "signflow-ng:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test"
+        }
+      }
+    }
+  }
+}
