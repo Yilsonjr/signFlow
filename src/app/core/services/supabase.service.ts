@@ -20,7 +20,12 @@ export class SupabaseService {
   };
 
   constructor() {
-    this.client = createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+    this.client = createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey, {
+      auth: {
+        autoRefreshToken: true,
+        detectSessionInUrl: true
+      }
+    });
   }
 
   // Auth helpers

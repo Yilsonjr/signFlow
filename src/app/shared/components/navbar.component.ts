@@ -71,7 +71,7 @@ import { AuthService } from '../../core/services/auth.service';
       text-decoration: none;
     }
     .nav-logo {
-      height: 32px;
+      height: 80px;
       width: auto;
     }
     .nav-links {
