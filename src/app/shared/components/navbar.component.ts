@@ -1,15 +1,16 @@
-import { Component, inject, signal } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
+  imports: [RouterLink],
   template: `
     <nav class="nav-bar">
       <div class="nav-inner">
-        <div class="nav-brand" (click)="router.navigate(['/'])">
-          <svg class="nav-logo" viewBox="0 0 680 160" xmlns="http://www.w3.org/2000/svg">
+        <a class="nav-brand" routerLink="/">
+          <svg class="nav-logo" viewBox="0 0 680 260" xmlns="http://www.w3.org/2000/svg">
             <title>SignFlow</title>
             <g transform="translate(130, 40)">
               <path d="M42 0 L84 16 L84 52 Q84 80 42 96 Q0 80 0 52 L0 16 Z" fill="#2563EB" opacity="0.12"/>
@@ -22,28 +23,24 @@ import { AuthService } from '../../core/services/auth.service';
             <text x="252" y="116" font-family="'Helvetica Neue', Arial, sans-serif" font-size="52" font-weight="700" letter-spacing="-1" fill="#0f172a">Sign</text>
             <text x="367" y="116" font-family="'Helvetica Neue', Arial, sans-serif" font-size="52" font-weight="300" letter-spacing="-1" fill="#2563EB">Flow</text>
           </svg>
-        </div>
+        </a>
 
         <div class="nav-links">
-          @if (isLanding()) {
-            <a href="#features" class="nav-link">Caracteristicas</a>
-            <a href="#pricing" class="nav-link">Precios</a>
-            <a href="#about" class="nav-link">Empresa</a>
-          } @else if (auth.isAuthenticated()) {
-            <a class="nav-link" (click)="router.navigate(['/dashboard'])">Dashboard</a>
-          }
+          <a class="nav-link" routerLink="/features" routerLinkActive="nav-link-active">Caracteristicas</a>
+          <a class="nav-link" routerLink="/precios" routerLinkActive="nav-link-active">Precios</a>
+          <a class="nav-link" routerLink="/empresa" routerLinkActive="nav-link-active">Empresa</a>
         </div>
 
         <div class="nav-actions">
-          @if (isLanding()) {
-            <button class="nav-cta" (click)="router.navigate(['/login'])">Empezar gratis</button>
-          } @else if (auth.isAuthenticated()) {
+          @if (auth.isAuthenticated()) {
             <span class="plan-badge" [class.plan-pro]="auth.isPro()" [class.plan-free]="!auth.isPro()">
               {{ auth.isPro() ? 'Pro' : 'Gratuito' }}
             </span>
+            <a class="nav-btn nav-btn-secondary" routerLink="/dashboard">Dashboard</a>
             <button class="nav-btn nav-btn-secondary" (click)="auth.logout()">Salir</button>
           } @else {
-            <button class="nav-btn nav-btn-primary" (click)="router.navigate(['/login'])">Iniciar sesion</button>
+            <a class="nav-btn nav-btn-primary" routerLink="/login">Iniciar sesion</a>
+            <a class="nav-btn nav-btn-outline" routerLink="/register">Registrarse</a>
           }
         </div>
       </div>
@@ -69,17 +66,17 @@ import { AuthService } from '../../core/services/auth.service';
       justify-content: space-between;
     }
     .nav-brand {
-      cursor: pointer;
       display: flex;
       align-items: center;
+      text-decoration: none;
     }
     .nav-logo {
-      height: 80px;
+      height: 32px;
       width: auto;
     }
     .nav-links {
       display: flex;
-      gap: 32px;
+      gap: 28px;
     }
     .nav-link {
       font-family: 'Helvetica Neue', Arial, sans-serif;
@@ -89,15 +86,50 @@ import { AuthService } from '../../core/services/auth.service';
       text-decoration: none;
       cursor: pointer;
       transition: color 0.15s;
+      padding: 4px 0;
+      position: relative;
     }
     .nav-link:hover {
       color: #0f172a;
+    }
+    .nav-link-active {
+      color: #2563EB;
     }
     .nav-actions {
       display: flex;
       align-items: center;
       gap: 10px;
     }
+    .nav-btn {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 8px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: opacity 0.15s, background 0.15s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+    }
+    .nav-btn-primary {
+      background: #2563EB;
+      color: #fff;
+      border: none;
+    }
+    .nav-btn-primary:hover { opacity: 0.88; }
+    .nav-btn-secondary {
+      background: #fff;
+      color: #0f172a;
+      border: 0.5px solid #cbd5e1;
+    }
+    .nav-btn-secondary:hover { background: #f8f9fb; }
+    .nav-btn-outline {
+      background: transparent;
+      color: #334155;
+      border: 0.5px solid #cbd5e1;
+    }
+    .nav-btn-outline:hover { background: #f8f9fb; }
     .nav-cta {
       font-family: 'Helvetica Neue', Arial, sans-serif;
       font-size: 14px;
@@ -121,43 +153,13 @@ import { AuthService } from '../../core/services/auth.service';
     }
     .plan-badge.plan-pro { background: #EFF6FF; color: #2563EB; }
     .plan-badge.plan-free { background: #f1f5f9; color: #64748b; }
-    .nav-btn {
-      font-family: 'Helvetica Neue', Arial, sans-serif;
-      font-size: 14px;
-      font-weight: 600;
-      padding: 8px 18px;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: opacity 0.15s, background 0.15s;
-    }
-    .nav-btn-primary {
-      background: #2563EB;
-      color: #fff;
-      border: none;
-    }
-    .nav-btn-primary:hover { opacity: 0.88; }
-    .nav-btn-secondary {
-      background: #fff;
-      color: #0f172a;
-      border: 0.5px solid #cbd5e1;
-    }
-    .nav-btn-secondary:hover { background: #f8f9fb; }
     @media (max-width: 768px) {
       .nav-links { display: none; }
+      .nav-btn-outline { display: none; }
     }
   `]
 })
 export class NavbarComponent {
   auth = inject(AuthService);
   router = inject(Router);
-
-  isLanding = signal(true);
-
-  constructor() {
-    this.router.events.subscribe((e: any) => {
-      if (e.urlAfterRedirects !== undefined) {
-        this.isLanding.set(e.urlAfterRedirects === '/' || e.urlAfterRedirects === '/landing');
-      }
-    });
-  }
 }

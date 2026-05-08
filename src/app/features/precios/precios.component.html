@@ -1,0 +1,65 @@
+<div class="page">
+  <section class="pricing-hero">
+    <div class="container">
+      <div class="eyebrow">
+        <span class="eyebrow-dot"></span>
+        <span class="eyebrow-text">Precios</span>
+      </div>
+      <h1 class="page-title">
+        <span class="title-dark">El plan correcto</span><br>
+        <span class="title-blue">para cada necesidad.</span>
+      </h1>
+      <p class="page-subtitle">Comienza gratis y escala cuando lo necesites. Sin sorpresas, sin permanencia.</p>
+    </div>
+  </section>
+
+  <section class="pricing-cards">
+    <div class="container">
+      <div class="plans-grid">
+        <div class="plan-card" *ngFor="let plan of plans">
+          <div class="popular-badge" *ngIf="plan.id === 'pro'">Mas popular</div>
+          <div class="plan-header">
+            <h3 class="plan-name">{{ plan.label }}</h3>
+            <div class="plan-price">
+              <span class="price-amount" *ngIf="plan.price > 0">${{ getPriceDisplay(plan.id) }}</span>
+              <span class="price-period" *ngIf="plan.price > 0">/mes</span>
+              <span class="price-amount" *ngIf="plan.id === 'payperuse'">$0.50</span>
+              <span class="price-period" *ngIf="plan.id === 'payperuse'">/doc</span>
+              <span class="price-amount" *ngIf="plan.id === 'free'">$0</span>
+              <span class="price-period" *ngIf="plan.id === 'free'">gratis</span>
+            </div>
+            <p class="plan-desc">{{ getPlanDesc(plan.id) }}</p>
+          </div>
+
+          <ul class="plan-features">
+            <li *ngFor="let feature of plan.features">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>{{ feature }}</span>
+            </li>
+          </ul>
+
+          <div class="plan-action">
+            <button class="plan-btn plan-btn-current" *ngIf="auth.isAuthenticated() && isCurrentPlan(plan.id)" disabled>Plan actual</button>
+            <button class="plan-btn plan-btn-secondary" *ngIf="auth.isAuthenticated() && !isCurrentPlan(plan.id) && plan.id === 'free'" (click)="selectFree()">Bajar a Free</button>
+            <button class="plan-btn plan-btn-primary" *ngIf="auth.isAuthenticated() && !isCurrentPlan(plan.id) && plan.id === 'payperuse'" (click)="startPayPerUse()">Recargar creditos</button>
+            <app-lemon-checkout *ngIf="auth.isAuthenticated() && !isCurrentPlan(plan.id) && plan.id !== 'free' && plan.id !== 'payperuse'" [planId]="plan.id" [buttonText]="getUpgradeLabel(plan.id)"></app-lemon-checkout>
+            <a class="plan-btn plan-btn-primary" *ngIf="!auth.isAuthenticated()" routerLink="/register">Registrarse</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="modal-overlay" *ngIf="showPayPerUseModal()" (click)="showPayPerUseModal.set(false)">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <h3>Recargar creditos</h3>
+      <p>Selecciona el monto de creditos que deseas comprar.</p>
+      <div class="credits-options">
+        <button class="credit-option" (click)="buyCredits(5)">$5.00 &mdash; ~6 documentos</button>
+        <button class="credit-option" (click)="buyCredits(10)">$10.00 &mdash; ~13 documentos</button>
+        <button class="credit-option" (click)="buyCredits(25)">$25.00 &mdash; ~33 documentos</button>
+      </div>
+      <button class="modal-close" (click)="showPayPerUseModal.set(false)">Cancelar</button>
+    </div>
+  </div>
+</div>

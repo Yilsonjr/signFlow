@@ -4,6 +4,9 @@ import { authGuard, anonGuard, adminGuard } from './core/guards/auth.guard';
 export const routes: Routes = [
   { path: '', redirectTo: 'landing', pathMatch: 'full' },
   { path: 'landing', loadComponent: () => import('./features/landing/landing.component').then(m => m.LandingComponent) },
+  { path: 'features', loadComponent: () => import('./features/features/features.component').then(m => m.FeaturesComponent) },
+  { path: 'empresa', loadComponent: () => import('./features/empresa/empresa.component').then(m => m.EmpresaComponent) },
+  { path: 'precios', loadComponent: () => import('./features/precios/precios.component').then(m => m.PreciosComponent) },
   { path: 'login', canActivate: [anonGuard], loadComponent: () => import('./features/auth/login/login.component').then(m => m.LoginComponent) },
   { path: 'register', canActivate: [anonGuard], loadComponent: () => import('./features/auth/register/register.component').then(m => m.RegisterComponent) },
   { path: 'dashboard', canActivate: [authGuard], loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent) },
