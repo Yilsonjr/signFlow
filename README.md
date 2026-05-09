@@ -1,159 +1,136 @@
-# SignFlow
+# SignFlow v2.0 - Angular 21
 
 **Firma digital de documentos, sin reuniones ni impresoras.**
 
-SignFlow es una aplicación web que permite enviar documentos para firma remota y recibirlos firmados en tiempo real. El emisor define la zona exacta donde debe ir la firma, comparte un código de 8 caracteres, y el firmante accede, dibuja su firma y el PDF firmado queda disponible para ambas partes.
+Nueva versión reescrita en Angular 21 con standalone components, signals, Bootstrap 5 y diseño moderno.
 
----
+## 🚀 Características
 
-## Demo
+- **Angular 21** - Framework moderno con standalone components
+- **Bootstrap 5** - UI responsive y moderna
+- **Múltiples firmantes** - Asigna diferentes zonas de firma a cada firmante
+- **Múltiples zonas de firma** - Define varias áreas de firma en un mismo documento
+- **Firma tipográfica** - Además de manuscrita, genera firmas con fuentes elegantes
+- **PayPal** - Integración de pagos para plan Pro ($19/mes)
+- **Hash SHA-256** - Verificación de integridad del documento
+- **Audit trail** - Registro de todas las acciones (apertura, firma, descarga)
+- **Notificaciones** - Email al emisor cuando se firma el documento
+- **Appwrite** - Backend serverless con autenticación, base de datos y storage
 
-🔗 [signflow-eight.vercel.app](https://signflow-eight.vercel.app)
-
----
-
-## Flujo de uso
-
-```
-Emisor                          Firmante
-  │                                │
-  ├─ Sube el documento PDF         │
-  ├─ Define la zona de firma       │
-  ├─ Obtiene código XXXXXXXX ──────┤
-  │                                ├─ Ingresa el código
-  │                                ├─ Ve el PDF con zona marcada
-  │                                ├─ Dibuja su firma
-  │                                └─ Confirma → PDF firmado en la nube
-  │
-  └─ Ingresa el mismo código → Descarga el PDF firmado
-```
-
----
-
-## Características
-
-- **Zona de firma precisa** — el emisor dibuja un rectángulo sobre el PDF indicando exactamente dónde debe firmar el destinatario
-- **Firma manuscrita digital** — canvas de alta resolución con soporte para mouse y pantallas táctiles
-- **PDF firmado real** — la firma se incrusta en el PDF usando pdf-lib, con fondo transparente
-- **Acceso compartido** — ambas partes pueden descargar el documento firmado usando el mismo código
-- **Sin registro** — funciona con sesiones anónimas, sin necesidad de crear cuenta
-- **Almacenamiento en la nube** — documentos y firmas guardados en Appwrite Storage y Firestore
-
----
-
-## Stack técnico
+## 📦 Stack Técnico
 
 | Capa | Tecnología |
 |------|-----------|
-| Frontend | HTML · CSS · JavaScript vanilla (SPA) |
-| Renderizado PDF | [PDF.js](https://mozilla.github.io/pdf.js/) v3.11 |
-| Edición PDF | [pdf-lib](https://pdf-lib.js.org/) v1.17 |
-| Base de datos | [Appwrite](https://appwrite.io) Cloud (Firestore) |
-| Almacenamiento | Appwrite Storage |
-| Autenticación | Appwrite Anonymous Sessions |
-| Deploy | [Vercel](https://vercel.com) |
+| Framework | Angular 21 (standalone components) |
+| UI | Bootstrap 5 + CSS3 |
+| PDF Render | PDF.js 3.11 |
+| PDF Edición | pdf-lib 1.17 |
+| Backend | Appwrite Cloud |
+| Pagos | PayPal SDK |
+| Deploy | Vercel |
 
----
-
-## Estructura del proyecto
-
-```
-signflow/
-├── index.html      # Shell HTML — solo contiene el div#app y los scripts
-├── app.js          # Lógica completa: router, vistas, eventos, Appwrite
-├── style.css       # Design system completo con tokens CSS
-├── vercel.json     # Configuración de rutas para Vercel
-└── README.md
-```
-
----
-
-## Configuración de Appwrite
-
-### Colección `documents`
-
-| Campo | Tipo | Tamaño |
-|-------|------|--------|
-| `fileName` | String | 255 |
-| `fileSize` | Integer | — |
-| `fileType` | String | 100 |
-| `fileId` | String | 36 |
-| `code` | String | 8 |
-| `status` | String | 20 |
-| `signZoneX` | Float | — |
-| `signZoneY` | Float | — |
-| `signZoneW` | Float | — |
-| `signZoneH` | Float | — |
-| `signZonePage` | Integer | — |
-| `signZoneScale` | Float | — |
-| `signatureData` | String | 500000 |
-| `signedFileId` | String | 36 |
-| `signedAt` | String | 50 |
-
-### Permisos requeridos
-
-**Colección `documents`:** `Any` → Create, Read, Update
-
-**Bucket de Storage:** `Any` → Create, Read
-
----
-
-## Correr localmente
-
-No requiere build ni dependencias de Node. Solo un servidor HTTP estático:
+## 🛠️ Instalación
 
 ```bash
-# Python
-python -m http.server 8000
+# Navegar al directorio
+cd signflow-ng
 
-# Node
-npx serve .
+# Instalar dependencias
+npm install
+
+# Configurar variables de entorno en src/app/core/services/appwrite.service.ts
+const APPWRITE_CONFIG = {
+  endpoint: 'https://sfo.cloud.appwrite.io/v1',
+  project: 'TU_PROJECT_ID',
+  database: 'TU_DATABASE_ID',
+  bucket: 'TU_BUCKET_ID'
+};
+
+# Ejecutar en desarrollo
+ng serve
+
+# Build para producción
+ng build --configuration production
 ```
 
-Luego abre `http://localhost:8000`.
+## 📋 Configuración de Appwrite
 
----
+### Colecciones necesarias:
 
-## Variables de configuración
+**users**:
+- userId (string)
+- email (string)
+- name (string)
+- plan (enum: free, pro)
+- docsUsed (integer)
+- resetDate (datetime)
+- paypalSubscriptionId (string, optional)
 
-Las credenciales de Appwrite están definidas directamente en `app.js`:
+**documents**:
+- fileName (string)
+- fileSize (integer)
+- fileType (string)
+- fileId (string)
+- docCode (string, 8 chars)
+- ownerId (string)
+- status (enum: pending, partial, signed)
+- signZones (json)
+- originalHash (string)
+- signedFileId (string, optional)
+- signedAt (datetime, optional)
 
-```js
-const APPWRITE_ENDPOINT = 'https://sfo.cloud.appwrite.io/v1';
-const APPWRITE_PROJECT  = 'tu-project-id';
-const APPWRITE_DB       = 'tu-database-id';
-const APPWRITE_COL      = 'documents';
-const APPWRITE_BUCKET   = 'tu-bucket-id';
+**signers**:
+- docId (string)
+- signerName (string)
+- signerEmail (string)
+- zoneIndex (integer)
+- code (string, 8 chars)
+- status (enum: pending, signed)
+- signatureData (string, optional)
+- signedFileId (string, optional)
+- signedAt (datetime, optional)
+
+### Permisos:
+- **users**: Authenticated → Create, Read, Update
+- **documents**: Authenticated → Create, Read; Any → Read (by code)
+- **signers**: Any → Create, Read, Update
+- **Storage bucket**: Any → Create, Read
+
+## 💳 PayPal
+
+1. Crear cuenta de negocio en [PayPal Developer](https://developer.paypal.com/)
+2. Crear una app y obtener el Client ID
+3. Crear un plan de suscripción
+4. Actualizar el Client ID en `src/index.html`:
+```html
+<script src="https://www.paypal.com/sdk/js?client-id=TU_CLIENT_ID&currency=USD&intent=subscription&vault=true"></script>
 ```
 
-> La API key de Appwrite es pública por diseño. La seguridad real está en las reglas de permisos de la colección y el bucket.
+## 🚀 Deploy en Vercel
 
----
+```bash
+# Instalar Vercel CLI
+npm i -g vercel
 
-## Limitaciones del plan gratuito de Appwrite
+# Deploy
+vercel --prod
+```
 
-| Recurso | Límite gratuito |
-|---------|----------------|
-| Storage | 2 GB |
-| Tamaño por archivo | 50 MB |
-| DB Reads | 500K / mes |
-| DB Writes | 250K / mes |
-| Proyectos | 2 |
+## 📝 Cambios desde v1.0
 
-Suficiente para cientos de documentos mensuales sin costo.
+- ✅ Reescrita completamente en Angular 21
+- ✅ Standalone components (sin NgModules)
+- ✅ Signals para estado reactivo
+- ✅ Lazy loading de rutas
+- ✅ Guards de autenticación
+- ✅ Múltiples firmantes por documento
+- ✅ Múltiples zonas de firma
+- ✅ Firma tipográfica con fuentes elegantes
+- ✅ PayPal en vez de Stripe
+- ✅ Hash SHA-256 para integridad
+- ✅ Audit trail completo
+- ✅ Diseño moderno con Bootstrap 5
 
----
-
-## Roadmap
-
-- [ ] Múltiples zonas de firma por documento
-- [ ] Notificación por email al emisor cuando se firma
-- [ ] Historial de documentos por sesión
-- [ ] Soporte para imágenes (PNG/JPG) además de PDF
-- [ ] Verificación de integridad del documento firmado
-
----
-
-## Licencia
+## 📄 Licencia
 
 MIT

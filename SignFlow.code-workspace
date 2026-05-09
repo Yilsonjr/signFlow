@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "../../../Curso-Python"
+		},
+		{
+			"path": "../../../Desktop/Curso-Angular"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"python-envs.defaultEnvManager": "ms-python.python:system"
+	}
+}

@@ -1,0 +1,283 @@
+<div class="admin-wrapper">
+  <div class="admin-sidebar">
+    <div class="sidebar-header">
+      <img src="/signflow-logo.png" alt="SignFlow" class="sidebar-logo">
+      <div>
+        <h2 class="sidebar-title">Panel Admin</h2>
+        <p class="sidebar-subtitle">SignFlow</p>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <button
+        class="nav-item"
+        [class.active]="activeTab() === 'users'"
+        (click)="setActiveTab('users')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+        <span>Usuarios</span>
+      </button>
+
+      <button
+        class="nav-item"
+        [class.active]="activeTab() === 'pricing'"
+        (click)="setActiveTab('pricing')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="1" x2="12" y2="23"/>
+          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+        </svg>
+        <span>Precios</span>
+      </button>
+
+      <button
+        class="nav-item"
+        [class.active]="activeTab() === 'lemonsqueezy'"
+        (click)="setActiveTab('lemonsqueezy')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+          <polyline points="7.5 4.27 12 6.11 16.5 4.27"/>
+          <line x1="12" y1="6.11" x2="12" y2="16.61"/>
+        </svg>
+        <span>Lemon Squeezy</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="btn-logout" (click)="logout()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+        <span>Cerrar Sesion</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="admin-content">
+    <div class="content-header">
+      <h1 class="content-title">
+        @if (activeTab() === 'users') {
+          Gestion de Usuarios
+        } @else if (activeTab() === 'pricing') {
+          Configuracion de Precios
+        } @else if (activeTab() === 'lemonsqueezy') {
+          Configuracion Lemon Squeezy
+        }
+      </h1>
+    </div>
+
+    <!-- Users Tab -->
+    @if (activeTab() === 'users') {
+      <div class="users-section">
+        <div class="section-header">
+          <h2>Usuarios Registrados ({{ adminService.allUsers().length }})</h2>
+          <button class="btn-refresh" (click)="loadData()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 4 23 10 17 10"/>
+              <polyline points="1 20 1 14 7 14"/>
+              <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
+            </svg>
+            Actualizar
+          </button>
+        </div>
+
+        <div class="users-table-container">
+          <table class="users-table">
+            <thead>
+              <tr>
+                <th>Usuario</th>
+                <th>Email</th>
+                <th>Plan</th>
+                <th>Rol</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (user of adminService.allUsers(); track user.id) {
+                <tr class="user-row">
+                  <td>
+                    <div class="user-info">
+                      <div class="user-avatar">{{ (user.name || user.email).charAt(0).toUpperCase() }}</div>
+                      <div>
+                        <div class="user-name">{{ user.name || 'Sin nombre' }}</div>
+                        <div class="user-id">{{ user.id }}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>{{ user.email }}</td>
+                  <td>
+                    <select
+                      [value]="user.plan"
+                      (change)="updateUserPlan(user, $any($event.target).value)"
+                      class="plan-select">
+                      <option value="free">Free</option>
+                      <option value="pro">Pro</option>
+                      <option value="business">Business</option>
+                      <option value="payperuse">Pay Per Use</option>
+                    </select>
+                  </td>
+                  <td>
+                    <select
+                      [value]="user.role || 'user'"
+                      (change)="updateUserRole(user, $any($event.target).value)"
+                      class="role-select"
+                      [disabled]="user.id === auth.currentUser()?.id">
+                      <option value="user">Usuario</option>
+                      <option value="admin">Admin</option>
+                    </select>
+                  </td>
+                  <td>
+                    <span class="status-badge" [class.status-active]="user.subscription_status === 'active'" [class.status-inactive]="user.subscription_status !== 'active'">
+                      {{ user.subscription_status === 'active' ? 'Activo' : 'Inactivo' }}
+                    </span>
+                  </td>
+                  <td>
+                    <div class="user-actions">
+                      <span class="docs-count">{{ user.docs_used || 0 }} docs/mes</span>
+                      @if (user.pay_per_use_credits) {
+                        <span class="credits-count">${{ user.pay_per_use_credits.toFixed(2) }}</span>
+                      }
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+
+    <!-- Pricing Tab -->
+    @if (activeTab() === 'pricing') {
+      <div class="pricing-section">
+        <div class="pricing-grid">
+          @for (config of adminService.pricingConfigurations(); track config.plan_id) {
+            <div class="pricing-card">
+              <h3 class="plan-title">{{ getPlanLabel(config.plan_id) }}</h3>
+              <div class="price-input-group">
+                <label>Precio mensual ($)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  [value]="config.price"
+                  (input)="config.price = +$event.target.value"
+                  class="price-input">
+              </div>
+              <div class="lemon-input-group">
+                <label>Lemon Squeezy Product ID</label>
+                <input
+                  type="text"
+                  [value]="config.lemon_product_id || ''"
+                  (input)="config.lemon_product_id = $event.target.value"
+                  placeholder="123456"
+                  class="lemon-input">
+              </div>
+              <div class="lemon-input-group">
+                <label>Lemon Squeezy Variant ID</label>
+                <input
+                  type="text"
+                  [value]="config.lemon_variant_id || ''"
+                  (input)="config.lemon_variant_id = $event.target.value"
+                  placeholder="789012"
+                  class="lemon-input">
+              </div>
+              <button
+                class="btn-update-price"
+                (click)="updatePricing(config.plan_id, config.price, config.lemon_product_id, config.lemon_variant_id)">
+                Actualizar Precio
+              </button>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Lemon Squeezy Tab -->
+    @if (activeTab() === 'lemonsqueezy') {
+      <div class="lemon-section">
+        <div class="lemon-config-card">
+          <h3>Configuracion Lemon Squeezy</h3>
+          <form class="lemon-form" (ngSubmit)="updateLemonSqueezyConfig(apiKey.value, storeId.value, webhookSecret.value, $any(environment).value)">
+            <div class="form-group">
+              <label for="apiKey">API Key</label>
+              <input
+                #apiKey
+                id="apiKey"
+                type="password"
+                [value]="adminService.lemonConfiguration()?.api_key || ''"
+                placeholder="Tu API Key de Lemon Squeezy"
+                required
+                class="form-input">
+            </div>
+
+            <div class="form-group">
+              <label for="storeId">Store ID</label>
+              <input
+                #storeId
+                id="storeId"
+                type="text"
+                [value]="adminService.lemonConfiguration()?.store_id || ''"
+                placeholder="12345"
+                required
+                class="form-input">
+            </div>
+
+            <div class="form-group">
+              <label for="webhookSecret">Webhook Secret</label>
+              <input
+                #webhookSecret
+                id="webhookSecret"
+                type="password"
+                [value]="adminService.lemonConfiguration()?.webhook_secret || ''"
+                placeholder="Secreto para verificar webhooks"
+                required
+                class="form-input">
+            </div>
+
+            <div class="form-group">
+              <label for="environment">Entorno</label>
+              <select
+                #environment
+                id="environment"
+                [value]="adminService.lemonConfiguration()?.environment || 'test'"
+                class="form-select">
+                <option value="test">Test (Pruebas)</option>
+                <option value="live">Live (Produccion)</option>
+              </select>
+            </div>
+
+            <button type="submit" class="btn-update-lemon">
+              Guardar Configuracion
+            </button>
+          </form>
+
+          <div class="lemon-info">
+            <h4>Configurar Lemon Squeezy</h4>
+            <ol>
+              <li>Crea una cuenta en <a href="https://www.lemonsqueezy.com" target="_blank">Lemon Squeezy</a></li>
+              <li>Ve a Settings > API y genera una API Key</li>
+              <li>Copia tu Store ID desde el dashboard</li>
+              <li>Crea los Products y Variants en Lemon Squeezy para cada plan</li>
+              <li>Anota los Product IDs y Variant IDs y configuralos en la pestana Precios</li>
+              <li>Configura un Webhook apuntando a tu Supabase Edge Function</li>
+              <li>Copia el Webhook Secret aqui</li>
+            </ol>
+            <div class="lemon-badge">
+              <span>Planes recomendados:</span>
+              <ul>
+                <li><strong>Pro</strong> - $7.99/mes (subscription)</li>
+                <li><strong>Business</strong> - $15/mes (subscription)</li>
+                <li><strong>Pay Per Use</strong> - Creditos prepagados (one-time)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>
