@@ -1,0 +1,80 @@
+.nav-bar {
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      background: rgba(248, 249, 251, 0.85);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 0.5px solid #e2e6ea;
+    }
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+    }
+    .nav-logo {
+      height: 32px;
+      width: auto;
+    }
+    .nav-links {
+      display: flex;
+      gap: 28px;
+    }
+    .nav-link {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      color: #334155;
+      text-decoration: none;
+      cursor: pointer;
+      transition: color 0.15s;
+      padding: 4px 0;
+    }
+    .nav-link:hover { color: #0f172a; }
+    .nav-link-active { color: #2563EB; }
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .nav-btn {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 8px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: opacity 0.15s, background 0.15s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+    }
+    .nav-btn-primary { background: #2563EB; color: #fff; border: none; }
+    .nav-btn-primary:hover { opacity: 0.88; }
+    .nav-btn-secondary { background: #fff; color: #0f172a; border: 0.5px solid #cbd5e1; }
+    .nav-btn-secondary:hover { background: #f8f9fb; }
+    .nav-btn-outline { background: transparent; color: #334155; border: 0.5px solid #cbd5e1; }
+    .nav-btn-outline:hover { background: #f8f9fb; }
+    .plan-badge {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 4px 12px;
+      border-radius: 100px;
+    }
+    .plan-badge.plan-pro { background: #EFF6FF; color: #2563EB; }
+    .plan-badge.plan-free { background: #f1f5f9; color: #64748b; }
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .nav-btn-outline { display: none; }
+    }

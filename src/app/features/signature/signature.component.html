@@ -1,0 +1,200 @@
+<div class="sig-wrapper">
+      @if (step() === 'verify') {
+        <div class="sig-verify-container">
+          <div class="sig-verify-card">
+            <div class="sig-verify-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <h1 class="sig-verify-title">Firmar documento</h1>
+            <p class="sig-verify-subtitle">Ingresa el código de 8 caracteres que recibiste para acceder al documento</p>
+
+            <div class="sig-code-input-group">
+              <input
+                type="text"
+                class="sig-code-input"
+                maxlength="8"
+                placeholder="XXXXXXXX"
+                [(ngModel)]="code"
+                (keyup.enter)="verifyCode()"
+                [disabled]="isVerifying()"
+              >
+              <button
+                class="sig-verify-btn"
+                (click)="verifyCode()"
+                [disabled]="code.length !== 8 || isVerifying()"
+              >
+                @if (isVerifying()) {
+                  <span class="sig-spinner"></span>
+                } @else {
+                  <span>Verificar</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                }
+              </button>
+            </div>
+
+            <div class="sig-code-hint">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              El código fue enviado por el remitente del documento
+            </div>
+          </div>
+        </div>
+      }
+
+      @if (step() === 'sign') {
+        <div class="container-fluid py-4">
+          <div class="sig-header">
+            <div class="sig-doc-info">
+              <h1 class="sig-title">{{ document()?.file_name }}</h1>
+              <p class="sig-subtitle">Solicitado por {{ signer()?.signer_name }}</p>
+            </div>
+            <div class="sig-status-badge" [class.signed]="signer()?.status === 'signed'">
+              @if (signer()?.status === 'signed') {
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                Firmado
+              } @else {
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Pendiente de firma
+              }
+            </div>
+          </div>
+
+          <div class="sig-layout">
+            <!-- PDF Preview -->
+            <div class="sig-pdf-section">
+              <div class="sig-pdf-toolbar">
+                <div class="sig-page-controls">
+                  <button class="btn-icon" (click)="prevPage()" [disabled]="currentPage() <= 1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+                  </button>
+                  <span class="sig-page-info">Página {{ currentPage() }} de {{ totalPages() }}</span>
+                  <button class="btn-icon" (click)="nextPage()" [disabled]="currentPage() >= totalPages()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <div class="sig-pdf-container">
+                <canvas #pdfCanvas class="sig-pdf-canvas"></canvas>
+
+                @if (isZoneOnCurrentPage()) {
+                  <div
+                    class="sig-zone-highlight"
+                    [style.left.px]="zoneDisplay()?.x"
+                    [style.top.px]="zoneDisplay()?.y"
+                    [style.width.px]="zoneDisplay()?.w"
+                    [style.height.px]="zoneDisplay()?.h"
+                  >
+                    <div class="sig-zone-label">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg>
+                      Zona de firma
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+
+            <!-- Signature Panel -->
+            <div class="sig-panel">
+              <div class="sig-panel-card">
+                <h3 class="sig-panel-title">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg>
+                  Tu firma
+                </h3>
+
+                @if (signer()?.status === 'signed') {
+                  <div class="sig-already-signed">
+                    <div class="sig-success-icon">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    </div>
+                    <h4>Ya has firmado este documento</h4>
+                    <p>Este documento fue firmado el {{ signer()?.signed_at | date:'medium' }}</p>
+                  </div>
+                } @else {
+                  <!-- Mode toggle -->
+                  <div class="sig-mode-toggle">
+                    <button
+                      class="sig-mode-btn"
+                      [class.active]="sigMode() === 'draw'"
+                      (click)="setSigMode('draw')"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg>
+                      Dibujar
+                    </button>
+                    <button
+                      class="sig-mode-btn"
+                      [class.active]="sigMode() === 'type'"
+                      (click)="setSigMode('type')"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+                      Escribir
+                    </button>
+                  </div>
+
+                  @if (sigMode() === 'draw') {
+                    <div class="sig-draw-area">
+                      <canvas
+                        #sigCanvas
+                        class="sig-canvas"
+                        (mousedown)="startDrawing($event)"
+                        (mousemove)="draw($event)"
+                        (mouseup)="stopDrawing()"
+                        (mouseleave)="stopDrawing()"
+                        (touchstart)="startDrawingTouch($event)"
+                        (touchmove)="drawTouch($event)"
+                        (touchend)="stopDrawing()"
+                      ></canvas>
+                      <div class="sig-canvas-hint">Firma dentro del recuadro</div>
+                      <button class="sig-clear-btn" (click)="clearSignature()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                        Limpiar
+                      </button>
+                    </div>
+                  }
+
+                  @if (sigMode() === 'type') {
+                    <div class="sig-type-area">
+                      <input
+                        type="text"
+                        class="sig-type-input"
+                        placeholder="Escribe tu nombre"
+                        [(ngModel)]="typedSignature"
+                        (input)="renderTypedSignature()"
+                        maxlength="40"
+                      >
+                      <div class="sig-font-selector">
+                        <label>Estilo:</label>
+                        <select class="sig-font-select" [(ngModel)]="selectedFont" (change)="renderTypedSignature()">
+                          <option value="'Dancing Script', cursive">Dancing Script</option>
+                          <option value="'Great Vibes', cursive">Great Vibes</option>
+                          <option value="'Parisienne', cursive">Parisienne</option>
+                          <option value="'Sacramento', cursive">Sacramento</option>
+                          <option value="'Alex Brush', cursive">Alex Brush</option>
+                          <option value="'Allura', cursive">Allura</option>
+                        </select>
+                      </div>
+                      <div class="sig-preview-box">
+                        <canvas #typedCanvas class="sig-typed-canvas"></canvas>
+                      </div>
+                    </div>
+                  }
+
+                  <button
+                    class="sig-submit-btn"
+                    [disabled]="!hasSignature() || isSubmitting()"
+                    (click)="submitSignature()"
+                  >
+                    @if (isSubmitting()) {
+                      <span class="sig-spinner"></span>
+                      <span>Firmando...</span>
+                    } @else {
+                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><polyline points="9 15 12 12 15 15"/><line x1="12" y1="12" x2="12" y2="21"/></svg>
+                      <span>Firmar documento</span>
+                    }
+                  </button>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
