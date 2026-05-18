@@ -119,8 +119,18 @@ export class AuthService {
 
       if (error) throw error;
 
-      // Esperar un momento para que el usuario se cree en auth.users
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Reintentar hasta que el usuario se cree en la tabla (trigger de Supabase)
+      let retries = 0;
+      while (retries < 5) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        const { data: existing } = await this.supabase
+          .from(this.supabase.tables.users)
+          .select('*')
+          .eq('user_id', data.user?.id)
+          .maybeSingle();
+        if (existing) break;
+        retries++;
+      }
 
       await this.loadUserDoc();
       toast('¡Cuenta creada!', 'success');

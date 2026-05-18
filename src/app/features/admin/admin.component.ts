@@ -5,10 +5,12 @@ import { AuthService } from '../../core/services/auth.service';
 import { User, PricingConfig, PlanType } from '../../core/models';
 import { toast } from '../../shared/utils/toast';
 
+import { FormsModule } from '@angular/forms';
+
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [],
+  imports: [FormsModule],
   templateUrl: './admin.component.html',
   styleUrls: ['./admin.component.scss']
 })

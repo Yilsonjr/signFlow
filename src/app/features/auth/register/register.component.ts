@@ -7,7 +7,8 @@ import { AuthService } from '../../../core/services/auth.service';
   selector: 'app-register',
   standalone: true,
   imports: [FormsModule, RouterLink],
-  templateUrl: './register.component.html'
+  templateUrl: './register.component.html',
+  styleUrls: ['./register.component.scss']
 })
 export class RegisterComponent {
   private auth = inject(AuthService);

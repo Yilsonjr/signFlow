@@ -300,7 +300,8 @@ export class SignatureComponent implements OnInit {
         zone
       );
 
-      const signedBlob = new Blob([signedPdfBytes.buffer as ArrayBuffer], { type: 'application/pdf' });
+      const signedArrayBuffer = signedPdfBytes.buffer.slice(signedPdfBytes.byteOffset, signedPdfBytes.byteOffset + signedPdfBytes.byteLength) as ArrayBuffer;
+      const signedBlob = new Blob([signedArrayBuffer], { type: 'application/pdf' });
       const signedFile = new File([signedBlob], `signed_${doc.file_name}`, { type: 'application/pdf' });
 
       const fileName = `signed_${Date.now()}_${doc.file_name}`;
