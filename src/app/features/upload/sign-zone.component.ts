@@ -1,4 +1,4 @@
-import { Component, inject, ElementRef, ViewChild, signal, effect } from '@angular/core';
+import { Component, inject, ElementRef, ViewChild, signal, effect, AfterViewInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { PdfService } from '../../core/services/pdf.service';
@@ -14,7 +14,7 @@ import { toast, showLoading, hideLoading } from '../../shared/utils/toast';
   templateUrl: './sign-zone.component.html',
   styleUrls: ['./sign-zone.component.scss']
 })
-export class SignZoneComponent {
+export class SignZoneComponent implements AfterViewInit {
   router = inject(Router);
   private pdfService = inject(PdfService);
   private docService = inject(DocumentService);
@@ -47,6 +47,14 @@ export class SignZoneComponent {
         this.router.navigate(['/upload']);
       }
     });
+  }
+
+  ngAfterViewInit() {
+    // El effect() puede correr antes de que @ViewChild esté listo.
+    // Este hook garantiza que el PDF se renderice una vez el canvas existe.
+    if (this.pdfBytes) {
+      this.renderPdf();
+    }
   }
 
   async renderPdf() {
