@@ -164,9 +164,9 @@ export class AuthService {
       const { data: userDoc, error } = await this.supabase.from(this.supabase.tables.users)
         .select('*')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle(); // maybeSingle() devuelve null si no existe, sin lanzar error 406
 
-      if (error && error.code !== 'PGRST116') { // PGRST116 = not found
+      if (error) {
         throw error;
       }
 
