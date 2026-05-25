@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import * as pdfjsLib from 'pdfjs-dist';
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'assets/pdf.worker.min.mjs';
+// URL absoluta para evitar problemas de resolución en rutas de Angular
+pdfjsLib.GlobalWorkerOptions.workerSrc = '/assets/pdf.worker.min.mjs';
 
 @Injectable({ providedIn: 'root' })
 export class PdfService {
@@ -11,7 +12,11 @@ export class PdfService {
     pageNum: number = 1,
     scale: number = 1.5
   ): Promise<{ width: number; height: number; totalPages: number }> {
-    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    // Usar Uint8Array en lugar de ArrayBuffer directamente:
+    // ArrayBuffer se TRANSFIERE al worker (queda detached), Uint8Array crea una copia segura.
+    const data = new Uint8Array(arrayBuffer.slice(0));
+
+    const pdf = await pdfjsLib.getDocument({ data }).promise;
     const page = await pdf.getPage(pageNum);
     const viewport = page.getViewport({ scale });
 
