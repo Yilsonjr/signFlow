@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { environment } from '../../../environments/environment';
 
 const SUPABASE_CONFIG = {
-  url: 'https://dqkcwosrayaktuuifivm.supabase.co',
-  anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRxa2N3b3NyYXlha3R1dWlmaXZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MDc1ODgsImV4cCI6MjA5MzQ4MzU4OH0.Hl5g0yC0vSnuQUJuwFZiF6nMYyERRM-6OTQVW4RTXMg'
+  url: environment.supabaseUrl,
+  anonKey: environment.supabaseAnonKey,
 };
 
 @Injectable({ providedIn: 'root' })

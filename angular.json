@@ -61,19 +61,11 @@
               "optimization": {
                 "fonts": false
               },
-              "define": {
-                "import.meta.env.SUPABASE_URL": "\"https://dqkcwosrayaktuuifivm.supabase.co\"",
-                "import.meta.env.SUPABASE_ANON_KEY": "\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRxa2N3b3NyYXlha3R1dWlmaXZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MDc1ODgsImV4cCI6MjA5MzQ4MzU4OH0.Hl5g0yC0vSnuQUJuwFZiF6nMYyERRM-6OTQVW4RTXMg\""
-              }
             },
             "development": {
               "optimization": false,
               "extractLicenses": false,
-              "sourceMap": true,
-              "define": {
-                "import.meta.env.SUPABASE_URL": "\"https://dqkcwosrayaktuuifivm.supabase.co\"",
-                "import.meta.env.SUPABASE_ANON_KEY": "\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRxa2N3b3NyYXlha3R1dWlmaXZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MDc1ODgsImV4cCI6MjA5MzQ4MzU4OH0.Hl5g0yC0vSnuQUJuwFZiF6nMYyERRM-6OTQVW4RTXMg\""
-              }
+              "sourceMap": true
             }
           },
           "defaultConfiguration": "production"
