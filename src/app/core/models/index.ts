@@ -77,6 +77,25 @@ export interface PricingConfig {
   updated_by: string;
 }
 
+export type AuditEventType =
+  | 'document_created'
+  | 'document_opened'
+  | 'document_signed'
+  | 'document_downloaded'
+  | 'document_cancelled'
+  | string;
+
+export interface AuditLog {
+  id: string;
+  doc_id: string;
+  event: AuditEventType;
+  details: string;
+  user_id: string;
+  created_at: string;
+  // join opcional
+  documents?: { code: string; file_name: string } | null;
+}
+
 export interface LemonSqueezyConfig {
   id?: string;
   api_key: string;

@@ -1,7 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { SupabaseService } from './supabase.service';
 import { AuthService } from './auth.service';
-import { User, PricingConfig, LemonSqueezyConfig, PlanType } from '../models';
+import { User, PricingConfig, LemonSqueezyConfig, PlanType, AuditLog } from '../models';
 import { toast } from '../../shared/utils/toast';
 
 @Injectable({ providedIn: 'root' })
@@ -12,10 +12,47 @@ export class AdminService {
   private users = signal<User[]>([]);
   private pricingConfigs = signal<PricingConfig[]>([]);
   private lemonConfig = signal<LemonSqueezyConfig | null>(null);
+  private auditLogs = signal<AuditLog[]>([]);
+  private auditLogsTotal = signal(0);
 
   readonly allUsers = this.users.asReadonly();
   readonly pricingConfigurations = this.pricingConfigs.asReadonly();
   readonly lemonConfiguration = this.lemonConfig.asReadonly();
+  readonly allAuditLogs = this.auditLogs.asReadonly();
+  readonly auditLogsCount = this.auditLogsTotal.asReadonly();
+
+  readonly PAGE_SIZE = 50;
+
+  async loadAuditLogs(page = 0, eventFilter = '') {
+    if (!this.auth.isAdmin()) {
+      toast('Acceso denegado', 'error');
+      return;
+    }
+
+    try {
+      let query = this.supabase
+        .from(this.supabase.tables.audit_logs)
+        .select('*, documents(code, file_name)', { count: 'exact' })
+        .order('created_at', { ascending: false })
+        .range(page * this.PAGE_SIZE, (page + 1) * this.PAGE_SIZE - 1);
+
+      if (eventFilter) {
+        query = query.eq('event', eventFilter);
+      }
+
+      const { data, error, count } = await query;
+      if (error) throw error;
+
+      if (page === 0) {
+        this.auditLogs.set((data as AuditLog[]) ?? []);
+      } else {
+        this.auditLogs.update(prev => [...prev, ...((data as AuditLog[]) ?? [])]);
+      }
+      this.auditLogsTotal.set(count ?? 0);
+    } catch (e: any) {
+      toast('Error cargando audit logs: ' + e.message, 'error');
+    }
+  }
 
   async loadUsers() {
     if (!this.auth.isAdmin()) {
