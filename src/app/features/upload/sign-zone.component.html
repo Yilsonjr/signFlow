@@ -137,14 +137,18 @@
                           (click)="$event.stopPropagation()"
                           (blur)="updateZone(zone)"
                         >
-                        <input 
-                          type="email" 
+                        <input
+                          type="email"
                           class="sz-zone-input sz-zone-email"
+                          [class.input-error]="zone.signerEmail.trim() !== '' && !isValidEmail(zone.signerEmail)"
                           placeholder="Email (opcional)"
                           [(ngModel)]="zone.signerEmail"
                           (click)="$event.stopPropagation()"
                           (blur)="updateZone(zone)"
                         >
+                        @if (zone.signerEmail.trim() !== '' && !isValidEmail(zone.signerEmail)) {
+                          <span class="sz-field-error">Email inválido</span>
+                        }
                       </div>
                       <button class="sz-zone-delete" (click)="removeZone(zone.id); $event.stopPropagation()">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
@@ -155,16 +159,20 @@
               }
 
               <div class="sz-sidebar-actions">
-                <button 
-                  class="btn-create" 
-                  [disabled]="zones().length === 0 || !allZonesHaveNames()"
+                <button
+                  class="btn-create"
+                  [disabled]="!allZonesValid()"
                   (click)="createDocument()"
                 >
                   <span>Crear documento</span>
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
                 </button>
-                @if (!allZonesHaveNames()) {
+                @if (zones().length === 0) {
+                  <p class="sz-validation-hint">Dibuja al menos una zona de firma</p>
+                } @else if (zones().some(z => !z.signerName.trim())) {
                   <p class="sz-validation-hint">Completa el nombre de todos los firmantes</p>
+                } @else if (zones().some(z => z.signerEmail.trim() !== '' && !isValidEmail(z.signerEmail))) {
+                  <p class="sz-validation-hint sz-validation-error">Corrige los emails inválidos</p>
                 }
               </div>
             </div>

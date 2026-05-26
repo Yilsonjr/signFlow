@@ -172,14 +172,38 @@ export class SignZoneComponent implements AfterViewInit {
     });
   }
 
+  private readonly EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  isValidEmail(email: string): boolean {
+    return email.trim() === '' || this.EMAIL_REGEX.test(email.trim());
+  }
+
+  allZonesValid(): boolean {
+    if (this.zones().length === 0) return false;
+    return this.zones().every(
+      z => z.signerName.trim().length > 0 && this.isValidEmail(z.signerEmail)
+    );
+  }
+
+  /** @deprecated usar allZonesValid() */
   allZonesHaveNames(): boolean {
-    return this.zones().length > 0 && this.zones().every(z => z.signerName.trim().length > 0);
+    return this.allZonesValid();
   }
 
   async createDocument() {
     if (!this.file || !this.pdfBytes) return;
-    if (!this.allZonesHaveNames()) {
+
+    const missingName = this.zones().find(z => !z.signerName.trim());
+    if (missingName) {
       toast('Completa el nombre de todos los firmantes', 'warning');
+      return;
+    }
+
+    const invalidEmail = this.zones().find(
+      z => z.signerEmail.trim() !== '' && !this.EMAIL_REGEX.test(z.signerEmail.trim())
+    );
+    if (invalidEmail) {
+      toast(`Email inválido para "${invalidEmail.signerName}"`, 'error');
       return;
     }
 
