@@ -111,4 +111,4 @@ La Edge Function maneja estos eventos:
 | Free | $0 | - | 3 docs/mes, 1 firmante, 1 zona |
 | Pro | $7.99/mes | Subscription | 50 docs/mes, 10 firmantes, 10 zonas |
 | Business | $15/mes | Subscription | Ilimitado |
-| Pay Per Use | Desde $0.50/doc | One-time | Ilimitado (con creditos) |
+| Pay Per Use | Desde $0.75/doc | One-time | Ilimitado (con creditos) |
