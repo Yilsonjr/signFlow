@@ -15,7 +15,8 @@ if (fs.existsSync(envPath)) {
 }
 
 const supabaseUrl     = process.env['SUPABASE_URL']      || '';
-const supabaseAnonKey = process.env['SUPABASE_ANON_KEY'] || '';
+// Acepta tanto SUPABASE_ANON_KEY (convención) como supabaseAnonKey (legacy Vercel)
+const supabaseAnonKey = process.env['SUPABASE_ANON_KEY'] || process.env['supabaseAnonKey'] || '';
 
 const missing = [];
 if (!supabaseUrl)     missing.push('SUPABASE_URL');
