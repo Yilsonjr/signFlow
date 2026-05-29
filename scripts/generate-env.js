@@ -17,8 +17,20 @@ if (fs.existsSync(envPath)) {
 const supabaseUrl     = process.env['SUPABASE_URL']      || '';
 const supabaseAnonKey = process.env['SUPABASE_ANON_KEY'] || '';
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn('⚠️  SUPABASE_URL o SUPABASE_ANON_KEY no definidas. Revisa tu .env o las variables de entorno.');
+const missing = [];
+if (!supabaseUrl)     missing.push('SUPABASE_URL');
+if (!supabaseAnonKey) missing.push('SUPABASE_ANON_KEY');
+
+if (missing.length > 0) {
+  // En CI/Vercel (sin .env) esto debe romper el build con mensaje claro
+  const isCI = !fs.existsSync(envPath);
+  if (isCI) {
+    console.error('❌ Variables de entorno requeridas no encontradas:', missing.join(', '));
+    console.error('   Configúralas en Vercel → Settings → Environment Variables');
+    process.exit(1);
+  } else {
+    console.warn('⚠️  Variables no definidas en .env:', missing.join(', '));
+  }
 }
 
 const content = `// ⚠️  Archivo auto-generado por scripts/generate-env.js — NO EDITAR
