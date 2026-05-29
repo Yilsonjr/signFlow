@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git commit -m 'fix: correct pay-per-use price to $0.75/doc *)",
+      "PowerShell($npmPath = \\(Get-Command npm\\).Source; Write-Host \"npm at: $npmPath\")",
+      "Bash(npm start *)",
+      "Bash(echo \"PID: $!\")",
+      "Bash(sleep 15 && cat /tmp/signflow-dev.log)",
+      "Read(//tmp/**)",
+      "Bash(node -e \"require\\('playwright'\\)\")",
+      "Bash(npm install *)",
+      "Bash(npx playwright *)",
+      "Bash(node /tmp/verify-signflow.mjs)",
+      "Bash(cp /tmp/verify-signflow.mjs \"/c/Users/USUARIO/Documents/GitHub/signPDF/verify-signflow.mjs\")",
+      "Bash(node verify-signflow.mjs)",
+      "Bash(node verify-final.mjs)",
+      "Read(//c/tmp/**)"
+    ]
+  }
+}
