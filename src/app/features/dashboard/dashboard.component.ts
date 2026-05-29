@@ -2,8 +2,13 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { DocumentService } from '../../core/services/document.service';
-import { Document } from '../../core/models';
+import { Document, Signer } from '../../core/models';
 import { NgFor, NgIf, DatePipe } from '@angular/common';
+
+export interface DocWithSigners extends Document {
+  signers: Signer[];
+  expanded: boolean;
+}
 
 @Component({
   selector: 'app-dashboard',
@@ -16,7 +21,7 @@ export class DashboardComponent implements OnInit {
   auth = inject(AuthService);
   docService = inject(DocumentService);
 
-  docs = signal<Document[]>([]);
+  docs = signal<DocWithSigners[]>([]);
   loading = signal(true);
 
   async ngOnInit() {
@@ -26,12 +31,35 @@ export class DashboardComponent implements OnInit {
   async loadDocs() {
     this.loading.set(true);
     const docs = await this.docService.getDocuments();
-    this.docs.set(docs);
+    const docsWithSigners = await Promise.all(
+      docs.map(async doc => ({
+        ...doc,
+        signers: await this.docService.getSignersByDocId(doc.id),
+        expanded: false
+      }))
+    );
+    this.docs.set(docsWithSigners);
     this.loading.set(false);
   }
 
-  copyCode(code: string) {
-    navigator.clipboard.writeText(`${window.location.origin}?code=${code}`);
-    alert('Código copiado ✅');
+  toggleSigners(doc: DocWithSigners) {
+    this.docs.update(list =>
+      list.map(d => d.id === doc.id ? { ...d, expanded: !d.expanded } : d)
+    );
+  }
+
+  copySignerLink(signerCode: string) {
+    const url = `${window.location.origin}/sign?code=${signerCode}`;
+    navigator.clipboard.writeText(url);
+    // Toast visual sin alert bloqueante
+    const el = document.createElement('div');
+    el.textContent = '✅ Enlace copiado';
+    el.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:10px 20px;border-radius:8px;font-size:14px;z-index:9999;';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 2000);
+  }
+
+  signerStatusLabel(status: string): string {
+    return status === 'signed' ? 'Firmado' : 'Pendiente';
   }
 }
