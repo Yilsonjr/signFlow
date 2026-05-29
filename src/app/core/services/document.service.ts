@@ -103,7 +103,12 @@ export class DocumentService {
     showLoading('Subiendo documento...');
     try {
       // Upload file to Supabase storage
-      const fileName = `${Date.now()}-${file.name}`;
+      const safeName = file.name
+        .normalize('NFD').replace(/[̀-ͯ]/g, '')  // quitar tildes
+        .replace(/[^a-zA-Z0-9._-]/g, '_')                  // espacios y chars especiales → _
+        .replace(/\.{2,}/g, '.')                            // doble punto → uno solo
+        .replace(/^_+|_+$/g, '');                           // trim underscores
+      const fileName = `${Date.now()}-${safeName}`;
       const { data: uploaded, error: uploadError } = await this.supabase.storage
         .from('documents')
         .upload(fileName, file);
