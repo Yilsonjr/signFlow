@@ -30,7 +30,7 @@ export class SignatureComponent implements OnInit {
   @ViewChild('typedCanvas') typedCanvasRef!: ElementRef<HTMLCanvasElement>;
 
   step = signal<'verify' | 'sign'>('verify');
-  code = '';
+  codeChars: string[] = Array(8).fill('');
   isVerifying = signal(false);
   document = signal<Document | null>(null);
   signer = signal<Signer | null>(null);
@@ -40,29 +40,85 @@ export class SignatureComponent implements OnInit {
   isDrawing = false;
   lastX = 0;
   lastY = 0;
-  typedSignature = signal('');
-  selectedFont = signal("'Dancing Script', cursive");
+  typedSignature = '';
+  selectedFont = "'Dancing Script', cursive";
   isSubmitting = signal(false);
   pdfBytes: ArrayBuffer | null = null;
   originalPdfBytes: ArrayBuffer | null = null;
+
+  get codeString(): string {
+    return this.codeChars.join('');
+  }
 
   constructor() {}
 
   ngOnInit() {
     this.route.queryParams.subscribe((params: { [key: string]: any }) => {
       if (params['code']) {
-        this.code = params['code'].toUpperCase();
+        const raw = params['code'].toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
+        const chars = raw.split('');
+        this.codeChars = [...chars, ...Array(8 - chars.length).fill('')];
         this.verifyCode();
       }
     });
   }
 
+  onOtpInput(event: Event, index: number) {
+    const input = event.target as HTMLInputElement;
+    const value = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    this.codeChars[index] = value.slice(-1);
+    input.value = this.codeChars[index];
+    if (this.codeChars[index] && index < 7) {
+      const boxes = document.querySelectorAll<HTMLInputElement>('.otp-box');
+      boxes[index + 1]?.focus();
+    }
+    if (this.codeString.length === 8) {
+      this.verifyCode();
+    }
+  }
+
+  onOtpKeydown(event: KeyboardEvent, index: number) {
+    const boxes = document.querySelectorAll<HTMLInputElement>('.otp-box');
+    if (event.key === 'Backspace') {
+      if (this.codeChars[index]) {
+        this.codeChars[index] = '';
+        (event.target as HTMLInputElement).value = '';
+      } else if (index > 0) {
+        this.codeChars[index - 1] = '';
+        boxes[index - 1].value = '';
+        boxes[index - 1]?.focus();
+      }
+    } else if (event.key === 'ArrowLeft' && index > 0) {
+      boxes[index - 1]?.focus();
+    } else if (event.key === 'ArrowRight' && index < 7) {
+      boxes[index + 1]?.focus();
+    }
+  }
+
+  onOtpPaste(event: ClipboardEvent) {
+    event.preventDefault();
+    const paste = (event.clipboardData?.getData('text') || '')
+      .toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
+    const chars = paste.split('');
+    for (let i = 0; i < 8; i++) {
+      this.codeChars[i] = chars[i] || '';
+    }
+    const focusIdx = Math.min(paste.length, 7);
+    setTimeout(() => {
+      const boxes = document.querySelectorAll<HTMLInputElement>('.otp-box');
+      boxes[focusIdx]?.focus();
+    }, 0);
+    if (paste.length === 8) {
+      setTimeout(() => this.verifyCode(), 50);
+    }
+  }
+
   async verifyCode() {
-    if (this.code.length !== 8) return;
+    if (this.codeString.length !== 8) return;
     this.isVerifying.set(true);
 
     try {
-      const signer = await this.docService.getSignerByCode(this.code);
+      const signer = await this.docService.getSignerByCode(this.codeString);
       if (!signer) {
         toast('Código no válido o expirado', 'error');
         this.isVerifying.set(false);
@@ -243,10 +299,10 @@ export class SignatureComponent implements OnInit {
     const ctx = canvas.getContext('2d')!;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    const text = this.typedSignature();
+    const text = this.typedSignature;
     if (!text) return;
 
-    ctx.font = `48px ${this.selectedFont()}`;
+    ctx.font = `48px ${this.selectedFont}`;
     ctx.fillStyle = '#0F172A';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
@@ -255,7 +311,7 @@ export class SignatureComponent implements OnInit {
 
   hasSignature(): boolean {
     if (this.sigMode() === 'type') {
-      return this.typedSignature().trim().length > 0;
+      return this.typedSignature.trim().length > 0;
     }
     const canvas = this.sigCanvasRef?.nativeElement;
     if (!canvas) return false;
