@@ -3,7 +3,7 @@ import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { DocumentService } from '../../core/services/document.service';
 import { Document, Signer } from '../../core/models';
-import { NgFor, NgIf, DatePipe } from '@angular/common';
+import { NgIf, DatePipe } from '@angular/common';
 
 export interface DocWithSigners extends Document {
   signers: Signer[];
@@ -13,7 +13,7 @@ export interface DocWithSigners extends Document {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [RouterLink, NgFor, NgIf, DatePipe],
+  imports: [RouterLink, NgIf, DatePipe],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })

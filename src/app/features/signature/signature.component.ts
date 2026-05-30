@@ -304,7 +304,12 @@ export class SignatureComponent implements OnInit {
       const signedBlob = new Blob([signedArrayBuffer], { type: 'application/pdf' });
       const signedFile = new File([signedBlob], `signed_${doc.file_name}`, { type: 'application/pdf' });
 
-      const fileName = `signed_${Date.now()}_${doc.file_name}`;
+      const safeName = doc.file_name
+        .normalize('NFD').replace(/[̀-ͯ]/g, '')
+        .replace(/[^a-zA-Z0-9._-]/g, '_')
+        .replace(/\.{2,}/g, '.')
+        .replace(/^_+|_+$/g, '');
+      const fileName = `signed_${Date.now()}_${safeName}`;
       const { data: uploaded, error: uploadError } = await this.supabase.storage
         .from('documents')
         .upload(fileName, signedFile);
