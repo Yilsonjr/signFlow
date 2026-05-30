@@ -23,6 +23,8 @@ export class DashboardComponent implements OnInit {
 
   docs = signal<DocWithSigners[]>([]);
   loading = signal(true);
+  confirmDeleteId = signal<string | null>(null);
+  deleting = signal(false);
 
   async ngOnInit() {
     await this.loadDocs();
@@ -61,5 +63,20 @@ export class DashboardComponent implements OnInit {
 
   signerStatusLabel(status: string): string {
     return status === 'signed' ? 'Firmado' : 'Pendiente';
+  }
+
+  async deleteDoc(doc: DocWithSigners, event: Event) {
+    event.stopPropagation();
+    if (this.deleting()) return;
+    this.deleting.set(true);
+    try {
+      await this.docService.deleteDocument(doc, doc.signers);
+      this.docs.update(list => list.filter(d => d.id !== doc.id));
+      this.confirmDeleteId.set(null);
+    } catch (e: any) {
+      console.error('Error deleting document:', e);
+    } finally {
+      this.deleting.set(false);
+    }
   }
 }

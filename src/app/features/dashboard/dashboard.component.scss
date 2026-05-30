@@ -401,6 +401,89 @@
       text-align: right;
     }
 
+    .actions-cell {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 6px;
+    }
+
+    .btn-delete {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: #cbd5e1;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      flex-shrink: 0;
+      &:hover {
+        background: #fef2f2;
+        border-color: #fecaca;
+        color: #ef4444;
+      }
+    }
+
+    .delete-confirm {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      animation: fadeIn 0.15s ease;
+    }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateX(6px); } to { opacity: 1; transform: translateX(0); } }
+
+    .delete-confirm-text {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: #ef4444;
+      white-space: nowrap;
+    }
+
+    .btn-confirm-yes {
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: none;
+      background: #ef4444;
+      color: white;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      &:hover:not(:disabled) { background: #dc2626; }
+      &:disabled { opacity: 0.6; cursor: not-allowed; }
+    }
+
+    .btn-confirm-no {
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+      background: white;
+      color: #64748b;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      &:hover { background: #f8fafc; border-color: #cbd5e1; }
+    }
+
+    .mini-spinner {
+      width: 12px;
+      height: 12px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: inline-block;
+    }
+
     .signers-count {
       font-size: 0.8125rem;
       color: #64748b;

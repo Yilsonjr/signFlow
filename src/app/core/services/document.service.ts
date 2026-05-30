@@ -242,6 +242,25 @@ export class DocumentService {
     }
   }
 
+  async deleteDocument(doc: Document, signers: { signed_file_id?: string }[]): Promise<void> {
+    // 1. Delete storage files
+    const filesToDelete = [doc.file_id, doc.signed_file_id, ...signers.map(s => s.signed_file_id)]
+      .filter((f): f is string => !!f);
+    if (filesToDelete.length > 0) {
+      await this.supabase.storage.from('documents').remove(filesToDelete);
+    }
+
+    // 2. Delete audit logs
+    await this.supabase.from(this.supabase.tables.audit_logs).delete().eq('doc_id', doc.id);
+
+    // 3. Delete signers
+    await this.supabase.from(this.supabase.tables.signers).delete().eq('doc_id', doc.id);
+
+    // 4. Delete document
+    const { error } = await this.supabase.from(this.supabase.tables.documents).delete().eq('id', doc.id);
+    if (error) throw error;
+  }
+
   private generateCode(): string {
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
     return Array.from({ length: 8 }, () =>

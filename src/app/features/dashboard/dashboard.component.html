@@ -117,11 +117,24 @@
                       <td>
                         <span class="date-text">{{ doc.created_at | date:'dd MMM yyyy' }}</span>
                       </td>
-                      <td class="text-end">
-                        <span class="signers-count">
-                          {{ doc.signers.length }} firmante{{ doc.signers.length !== 1 ? 's' : '' }}
-                        </span>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-left:6px;transition:transform .2s" [style.transform]="doc.expanded ? 'rotate(180deg)' : 'rotate(0)'"><polyline points="6 9 12 15 18 9"/></svg>
+                      <td class="text-end actions-cell">
+                        @if (confirmDeleteId() === doc.id) {
+                          <div class="delete-confirm" (click)="$event.stopPropagation()">
+                            <span class="delete-confirm-text">¿Eliminar?</span>
+                            <button class="btn-confirm-yes" (click)="deleteDoc(doc, $event)" [disabled]="deleting()">
+                              @if (deleting()) { <span class="mini-spinner"></span> } @else { Sí }
+                            </button>
+                            <button class="btn-confirm-no" (click)="confirmDeleteId.set(null); $event.stopPropagation()">No</button>
+                          </div>
+                        } @else {
+                          <span class="signers-count">
+                            {{ doc.signers.length }} firmante{{ doc.signers.length !== 1 ? 's' : '' }}
+                          </span>
+                          <button class="btn-delete" title="Eliminar documento" (click)="confirmDeleteId.set(doc.id); $event.stopPropagation()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+                          </button>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-left:4px;transition:transform .2s;flex-shrink:0" [style.transform]="doc.expanded ? 'rotate(180deg)' : 'rotate(0)'"><polyline points="6 9 12 15 18 9"/></svg>
+                        }
                       </td>
                     </tr>
 
