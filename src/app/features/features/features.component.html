@@ -18,5 +18,15 @@
           </div>
         </div>
       </section>
-      <section class="cta-section"><div class="container"><h2>Comienza a firmar hoy</h2><p>3 documentos gratis al mes, sin tarjeta de credito.</p><a class="cta-btn" routerLink="/register">Crear cuenta gratis</a></div></section>
+      <section class="cta-section">
+        <div class="container">
+          <h2>Comienza a firmar hoy</h2>
+          <p>3 documentos gratis al mes, sin tarjeta de credito.</p>
+          @if (auth.isAuthenticated()) {
+            <a class="cta-btn" routerLink="/dashboard">Ir al Dashboard</a>
+          } @else {
+            <a class="cta-btn" routerLink="/register">Crear cuenta gratis</a>
+          }
+        </div>
+      </section>
     </div>

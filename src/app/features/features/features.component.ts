@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-features',
@@ -8,4 +9,6 @@ import { RouterLink } from '@angular/router';
   templateUrl: './features.component.html',
   styleUrls: ['./features.component.scss']
 })
-export class FeaturesComponent {}
+export class FeaturesComponent {
+  auth = inject(AuthService);
+}

@@ -14,7 +14,9 @@
       "Bash(cp /tmp/verify-signflow.mjs \"/c/Users/USUARIO/Documents/GitHub/signPDF/verify-signflow.mjs\")",
       "Bash(node verify-signflow.mjs)",
       "Bash(node verify-final.mjs)",
-      "Read(//c/tmp/**)"
+      "Read(//c/tmp/**)",
+      "Bash(git commit -m ' *)",
+      "Bash(git commit *)"
     ]
   }
 }

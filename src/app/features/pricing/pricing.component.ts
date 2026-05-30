@@ -1,6 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { NgFor } from '@angular/common';
 import { PLANS, PlanType, Plan } from '../../core/models';
 import { AuthService } from '../../core/services/auth.service';
 import { PaymentService } from '../../core/services/payment.service';
@@ -11,7 +10,7 @@ import { toast } from '../../shared/utils/toast';
 @Component({
   selector: 'app-pricing',
   standalone: true,
-  imports: [NgFor, LemonCheckoutComponent],
+  imports: [LemonCheckoutComponent],
   templateUrl: './pricing.component.html',
   styleUrls: ['./pricing.component.scss']
 })
@@ -59,10 +58,10 @@ export class PricingComponent {
 
   async selectFree() {
     if (this.isCurrentPlan('free')) return;
-    const confirmed = confirm('Bajar al plan Free? Perderas funciones Pro.');
+    const confirmed = confirm('¿Bajar al plan Free? Perderás las funciones de tu plan actual.');
     if (!confirmed) return;
-    await this.paymentService.cancelSubscription();
-    this.router.navigate(['/dashboard']);
+    const ok = await this.paymentService.downgradeToFree();
+    if (ok) this.router.navigate(['/dashboard']);
   }
 
   startPayPerUse() {

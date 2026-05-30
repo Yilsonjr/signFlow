@@ -185,6 +185,36 @@ export class PaymentService {
     }
   }
 
+  async downgradeToFree(): Promise<boolean> {
+    const user = this.auth.currentUser();
+    if (!user) return false;
+
+    if (user.lemon_subscription_id) {
+      return this.cancelSubscription();
+    }
+
+    try {
+      const { error } = await this.supabase
+        .from(this.supabase.tables.users)
+        .update({
+          plan: 'free',
+          lemon_subscription_id: null,
+          subscription_status: null,
+          subscription_end_date: null,
+          pay_per_use_credits: 0
+        })
+        .eq('id', user.id);
+
+      if (error) throw error;
+      await this.auth.init();
+      toast('Ahora estas en el plan Free.', 'success');
+      return true;
+    } catch (e: any) {
+      toast('Error: ' + e.message, 'error');
+      return false;
+    }
+  }
+
   async cancelSubscription(): Promise<boolean> {
     const user = this.auth.currentUser();
     if (!user?.lemon_subscription_id) {
