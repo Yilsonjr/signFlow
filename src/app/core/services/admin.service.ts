@@ -124,7 +124,10 @@ export class AdminService {
       toast('Acceso denegado', 'error');
       return;
     }
+    await this.loadPublicPricingConfigs();
+  }
 
+  async loadPublicPricingConfigs() {
     try {
       const { data, error } = await this.supabase
         .from(this.supabase.tables.pricing_configs)

@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { PLANS, PlanType, Plan } from '../../core/models';
 import { AuthService } from '../../core/services/auth.service';
@@ -14,7 +14,7 @@ import { toast } from '../../shared/utils/toast';
   templateUrl: './pricing.component.html',
   styleUrls: ['./pricing.component.scss']
 })
-export class PricingComponent {
+export class PricingComponent implements OnInit {
   plans: Plan[] = PLANS;
   auth = inject(AuthService);
   router = inject(Router);
@@ -22,6 +22,10 @@ export class PricingComponent {
   adminService = inject(AdminService);
   showCheckoutFor = signal<PlanType | null>(null);
   showPayPerUseModal = signal(false);
+
+  ngOnInit() {
+    this.adminService.loadPublicPricingConfigs();
+  }
 
   isCurrentPlan(planId: PlanType): boolean {
     return this.auth.currentPlan().id === planId;
