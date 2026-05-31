@@ -194,12 +194,12 @@
                   class="lemon-input">
               </div>
               <div class="lemon-input-group">
-                <label>Lemon Squeezy Variant ID</label>
+                <label>Checkout URL (Lemon Squeezy buy link)</label>
                 <input
                   type="text"
                   [value]="config.lemon_variant_id || ''"
                   (input)="config.lemon_variant_id = $event.target.value"
-                  placeholder="789012"
+                  placeholder="https://tutienda.lemonsqueezy.com/checkout/buy/..."
                   class="lemon-input">
               </div>
               <button

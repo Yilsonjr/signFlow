@@ -58,8 +58,8 @@ export class PaymentService {
       return;
     }
 
-    const variantId = await this.fetchVariantId(plan);
-    if (!variantId) {
+    const checkoutUrl = await this.fetchVariantId(plan);
+    if (!checkoutUrl) {
       toast('Producto no configurado. Contacta al administrador.', 'error');
       return;
     }
@@ -67,14 +67,12 @@ export class PaymentService {
     try {
       await this.loadLemonSqueezyScript();
 
-      window.LemonSqueezy?.Url?.Open?.(variantId, {
-        checkout: {
-          custom: {
-            user_id: user.user_id,
-            plan: plan
-          }
-        }
-      });
+      const url = new URL(checkoutUrl);
+      url.searchParams.set('embed', '1');
+      url.searchParams.set('checkout[custom][user_id]', user.user_id || user.id);
+      url.searchParams.set('checkout[custom][plan]', plan);
+
+      window.LemonSqueezy?.Url?.Open?.(url.toString());
     } catch (e: any) {
       toast('Error abriendo checkout: ' + e.message, 'error');
     }
