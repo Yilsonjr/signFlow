@@ -43,6 +43,14 @@ export class PaymentService {
     return this.admin.getDynamicLemonVariantId(plan);
   }
 
+  private async fetchVariantId(plan: PlanType): Promise<string | null> {
+    const cached = this.admin.getDynamicLemonVariantId(plan);
+    if (cached) return cached;
+
+    await this.admin.loadPublicPricingConfigs();
+    return this.admin.getDynamicLemonVariantId(plan);
+  }
+
   async openCheckout(plan: PlanType): Promise<void> {
     const user = this.auth.currentUser();
     if (!user) {
@@ -50,7 +58,7 @@ export class PaymentService {
       return;
     }
 
-    const variantId = this.getLemonVariantId(plan);
+    const variantId = await this.fetchVariantId(plan);
     if (!variantId) {
       toast('Producto no configurado. Contacta al administrador.', 'error');
       return;
