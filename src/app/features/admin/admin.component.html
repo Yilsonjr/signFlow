@@ -171,9 +171,9 @@
     @if (activeTab() === 'pricing') {
       <div class="pricing-section">
         <div class="pricing-grid">
-          @for (config of adminService.pricingConfigurations(); track config.plan_id) {
+          @for (config of adminService.pricingConfigurations(); track config.plan) {
             <div class="pricing-card">
-              <h3 class="plan-title">{{ getPlanLabel(config.plan_id) }}</h3>
+              <h3 class="plan-title">{{ getPlanLabel(config.plan) }}</h3>
               <div class="price-input-group">
                 <label>Precio mensual ($)</label>
                 <input
@@ -204,7 +204,7 @@
               </div>
               <button
                 class="btn-update-price"
-                (click)="updatePricing(config.plan_id, config.price, config.lemon_product_id, config.lemon_variant_id)">
+                (click)="updatePricing(config.plan, config.price, config.lemon_product_id, config.lemon_variant_id)">
                 Actualizar Precio
               </button>
             </div>

@@ -149,14 +149,14 @@ export class AdminService {
     const userId = this.auth.currentUser()?.id || 'system';
     const defaultConfigs: PricingConfig[] = [
       {
-        plan_id: 'pro',
+        plan: 'pro',
         price: 7.99,
         is_active: true,
         updated_at: new Date().toISOString(),
         updated_by: userId
       },
       {
-        plan_id: 'business',
+        plan: 'business',
         price: 15.00,
         is_active: true,
         updated_at: new Date().toISOString(),
@@ -182,7 +182,7 @@ export class AdminService {
         updated_by: userId
       };
 
-      const existing = this.pricingConfigs().find(c => c.plan_id === planId);
+      const existing = this.pricingConfigs().find(c => c.plan === planId);
 
       if (existing && existing.id) {
         const { error } = await this.supabase
@@ -195,7 +195,7 @@ export class AdminService {
           .from(this.supabase.tables.pricing_configs)
           .insert({
             ...config,
-            plan_id: planId,
+            plan: planId,
             is_active: true
           });
         if (error) throw error;
@@ -268,12 +268,12 @@ export class AdminService {
   }
 
   getDynamicPrice(planId: PlanType): number {
-    const config = this.pricingConfigs().find(c => c.plan_id === planId && c.is_active);
+    const config = this.pricingConfigs().find(c => c.plan === planId && c.is_active);
     return config?.price || 0;
   }
 
   getDynamicLemonVariantId(planId: PlanType): string | null {
-    const config = this.pricingConfigs().find(c => c.plan_id === planId && c.is_active);
+    const config = this.pricingConfigs().find(c => c.plan === planId && c.is_active);
     return config?.lemon_variant_id || null;
   }
 }

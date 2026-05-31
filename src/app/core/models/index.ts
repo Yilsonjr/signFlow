@@ -68,7 +68,7 @@ export interface Plan {
 
 export interface PricingConfig {
   id?: string;
-  plan_id: PlanType;
+  plan: PlanType;
   price: number;
   lemon_product_id?: string;
   lemon_variant_id?: string;
