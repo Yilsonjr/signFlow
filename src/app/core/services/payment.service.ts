@@ -65,14 +65,12 @@ export class PaymentService {
     }
 
     try {
-      await this.loadLemonSqueezyScript();
-
       const url = new URL(checkoutUrl);
-      url.searchParams.set('embed', '1');
       url.searchParams.set('checkout[custom][user_id]', user.user_id || user.id);
       url.searchParams.set('checkout[custom][plan]', plan);
+      url.searchParams.set('embed', '1');
 
-      window.LemonSqueezy?.Url?.Open?.(url.toString());
+      window.open(url.toString(), '_blank', 'noopener');
     } catch (e: any) {
       toast('Error abriendo checkout: ' + e.message, 'error');
     }
