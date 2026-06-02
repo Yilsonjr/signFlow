@@ -229,21 +229,29 @@ export class SignatureComponent implements OnInit {
     }
   }
 
+  private getCanvasCoords(canvas: HTMLCanvasElement, clientX: number, clientY: number) {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    return {
+      x: (clientX - rect.left) * scaleX,
+      y: (clientY - rect.top) * scaleY
+    };
+  }
+
   startDrawing(e: MouseEvent) {
     const canvas = this.sigCanvasRef.nativeElement;
-    const rect = canvas.getBoundingClientRect();
+    const { x, y } = this.getCanvasCoords(canvas, e.clientX, e.clientY);
     this.isDrawing = true;
-    this.lastX = e.clientX - rect.left;
-    this.lastY = e.clientY - rect.top;
+    this.lastX = x;
+    this.lastY = y;
   }
 
   draw(e: MouseEvent) {
     if (!this.isDrawing) return;
     const canvas = this.sigCanvasRef.nativeElement;
     const ctx = canvas.getContext('2d')!;
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const { x, y } = this.getCanvasCoords(canvas, e.clientX, e.clientY);
 
     ctx.strokeStyle = '#0F172A';
     ctx.lineWidth = 2.5;
@@ -265,11 +273,11 @@ export class SignatureComponent implements OnInit {
   startDrawingTouch(e: TouchEvent) {
     e.preventDefault();
     const canvas = this.sigCanvasRef.nativeElement;
-    const rect = canvas.getBoundingClientRect();
     const touch = e.touches[0];
+    const { x, y } = this.getCanvasCoords(canvas, touch.clientX, touch.clientY);
     this.isDrawing = true;
-    this.lastX = touch.clientX - rect.left;
-    this.lastY = touch.clientY - rect.top;
+    this.lastX = x;
+    this.lastY = y;
   }
 
   drawTouch(e: TouchEvent) {
@@ -277,10 +285,8 @@ export class SignatureComponent implements OnInit {
     if (!this.isDrawing) return;
     const canvas = this.sigCanvasRef.nativeElement;
     const ctx = canvas.getContext('2d')!;
-    const rect = canvas.getBoundingClientRect();
     const touch = e.touches[0];
-    const x = touch.clientX - rect.left;
-    const y = touch.clientY - rect.top;
+    const { x, y } = this.getCanvasCoords(canvas, touch.clientX, touch.clientY);
 
     ctx.strokeStyle = '#0F172A';
     ctx.lineWidth = 2.5;
