@@ -65,12 +65,11 @@ export class PaymentService {
     }
 
     try {
-      const url = new URL(checkoutUrl);
-      url.searchParams.set('checkout[custom][user_id]', user.user_id || user.id);
-      url.searchParams.set('checkout[custom][plan]', plan);
-      url.searchParams.set('embed', '1');
+      const base = checkoutUrl.includes('?') ? checkoutUrl : checkoutUrl + '?';
+      const userId = encodeURIComponent(user.user_id || user.id);
+      const finalUrl = `${base}&checkout[custom][user_id]=${userId}&checkout[custom][plan]=${plan}&embed=1`;
 
-      window.open(url.toString(), '_blank', 'noopener');
+      window.open(finalUrl, '_blank', 'noopener');
     } catch (e: any) {
       toast('Error abriendo checkout: ' + e.message, 'error');
     }
