@@ -36,9 +36,10 @@ export class PdfService {
   async embedSignature(
     pdfBytes: ArrayBuffer,
     signatureDataUrl: string,
-    zone: { page: number; x: number; y: number; w: number; h: number; scale: number }
+    zone: { page: number; x: number; y: number; w: number; h: number; scale: number },
+    addWatermark = false
   ): Promise<Uint8Array> {
-    const { PDFDocument } = await import('pdf-lib');
+    const { PDFDocument, rgb, StandardFonts } = await import('pdf-lib');
     const pdfDoc = await PDFDocument.load(pdfBytes);
     const pages = pdfDoc.getPages();
     const page = pages[zone.page - 1];
@@ -59,6 +60,25 @@ export class PdfService {
       width: zone.w * scaleX,
       height: zone.h * scaleY
     });
+
+    if (addWatermark) {
+      const font = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+      const text = 'SignFlow Free';
+      const fontSize = 48;
+      const textWidth = font.widthOfTextAtSize(text, fontSize);
+      const cx = pdfW / 2 - textWidth / 2;
+      const cy = pdfH / 2 - fontSize / 2;
+
+      page.drawText(text, {
+        x: cx,
+        y: cy,
+        size: fontSize,
+        font,
+        color: rgb(0.75, 0.75, 0.75),
+        opacity: 0.35,
+        rotate: { type: 'degrees', angle: -35 } as any
+      });
+    }
 
     return await pdfDoc.save();
   }

@@ -422,6 +422,10 @@
       cursor: pointer;
       transition: all 0.2s ease;
     }
+    .sig-mode-btn.sig-mode-locked {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
     .sig-mode-btn.active {
       background: var(--surface);
       color: var(--primary);

@@ -34,6 +34,7 @@ export class SignatureComponent implements OnInit {
   isVerifying = signal(false);
   document = signal<Document | null>(null);
   signer = signal<Signer | null>(null);
+  ownerHasPro = signal(false);
   currentPage = signal(1);
   totalPages = signal(1);
   sigMode = signal<SignatureMode>('draw');
@@ -139,6 +140,17 @@ export class SignatureComponent implements OnInit {
       this.signer.set(signer);
       this.document.set(doc);
       this.currentPage.set(doc.sign_zone_page || 1);
+
+      // Check owner's plan for feature gating
+      if (doc.owner_id) {
+        const { data: owner } = await this.supabase
+          .from('users')
+          .select('plan')
+          .eq('id', doc.owner_id)
+          .maybeSingle();
+        const plan = owner?.plan || 'free';
+        this.ownerHasPro.set(plan === 'pro' || plan === 'business' || plan === 'payperuse');
+      }
 
       try {
         const { data: fileData, error } = await this.supabase.storage
@@ -353,7 +365,8 @@ export class SignatureComponent implements OnInit {
       const signedPdfBytes = await this.pdfService.embedSignature(
         this.originalPdfBytes,
         signatureDataUrl,
-        zone
+        zone,
+        !this.ownerHasPro()
       );
 
       const signedArrayBuffer = signedPdfBytes.buffer.slice(signedPdfBytes.byteOffset, signedPdfBytes.byteOffset + signedPdfBytes.byteLength) as ArrayBuffer;
