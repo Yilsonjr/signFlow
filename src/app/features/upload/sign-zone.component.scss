@@ -175,7 +175,6 @@
     }
 
     .sz-canvas-container {
-      position: relative;
       display: flex;
       justify-content: center;
       padding: 24px;
@@ -187,10 +186,17 @@
       cursor: crosshair;
     }
 
+    .sz-canvas-wrapper {
+      position: relative;
+      line-height: 0;
+      align-self: flex-start;
+    }
+
     .sz-pdf-canvas {
       box-shadow: var(--shadow-lg);
       border-radius: var(--radius-md);
       background: white;
+      display: block;
     }
 
     .sz-zone-overlay {
