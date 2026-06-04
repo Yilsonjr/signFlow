@@ -182,6 +182,9 @@ export class DocumentService {
       // Log audit event
       await this.logAuditEvent(doc.id, 'document_created', `Documento creado con ${zones.length} firmante(s). Hash: ${hash}`);
 
+      // Send signing emails (non-blocking)
+      this.sendSigningEmails(createdSigners, zones, doc.file_name, user.name || user.email);
+
       hideLoading();
       toast('Documento creado exitosamente', 'success');
       return { doc: doc as Document, signers: createdSigners };
@@ -259,6 +262,35 @@ export class DocumentService {
     // 4. Delete document
     const { error } = await this.supabase.from(this.supabase.tables.documents).delete().eq('id', doc.id);
     if (error) throw error;
+  }
+
+  private sendSigningEmails(
+    signers: Signer[],
+    zones: SignatureZone[],
+    documentName: string,
+    ownerName: string
+  ): void {
+    const appUrl = window.location.origin;
+    const payload = signers
+      .filter((s, i) => zones[i]?.signerEmail?.trim())
+      .map((signer, i) => ({
+        signerName: signer.signer_name,
+        signerEmail: signer.signer_email || zones[i]?.signerEmail || '',
+        signerCode: signer.code,
+        documentName,
+        ownerName,
+        appUrl
+      }))
+      .filter(p => p.signerEmail);
+
+    if (payload.length === 0) return;
+
+    this.supabase.client.functions
+      .invoke('send-signing-email', { body: { signers: payload } })
+      .then(({ error }) => {
+        if (error) console.error('Email send error:', error);
+        else toast(`Email enviado a ${payload.length} firmante(s)`, 'success');
+      });
   }
 
   private generateCode(): string {
